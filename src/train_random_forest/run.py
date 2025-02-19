@@ -71,6 +71,12 @@ def go(args):
     # Then fit it to the X_train, y_train data
     logger.info("Fitting")
 
+    #JWC
+    
+    sk_pipe.fit(X_train, y_train)
+    
+    #JWC
+    
     ######################################
     # Fit the pipeline sk_pipe by calling the .fit method on X_train and y_train
     # YOUR CODE HERE
@@ -95,8 +101,22 @@ def go(args):
     ######################################
     # Save the sk_pipe pipeline as a mlflow.sklearn model in the directory "random_forest_dir"
     # HINT: use mlflow.sklearn.save_model
+    #JWC
+    #signature = mlflow.models.infer_signature(X_val, y_pred)
+    #JWC
+    artifact_path="random_forest_dir"
     mlflow.sklearn.save_model(
-        # YOUR CODE HERE
+    
+    #JWC
+    #
+        sk_pipe,
+        artifact_path,  
+    #JWC      
+    #    signature = signature,
+    #JWC
+    #    serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
+    #JWC
+    #
         input_example = X_train.iloc[:5]
     )
     ######################################
@@ -121,7 +141,13 @@ def go(args):
     # Now save the variable mae under the key "mae".
     # YOUR CODE HERE
     ######################################
-
+    
+    #JWC
+    
+    run.summary['mae'] = mae
+    
+    #JWC
+    
     # Upload to W&B the feture importance visualization
     run.log(
         {
@@ -162,7 +188,12 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
     # 2 - A OneHotEncoder() step to encode the variable
     non_ordinal_categorical_preproc = make_pipeline(
-        # YOUR CODE HERE
+    
+    #JWC
+        SimpleImputer(strategy="most_frequent"),
+        OneHotEncoder()
+    #JWC
+    
     )
     ######################################
 
@@ -225,7 +256,14 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
 
     sk_pipe = Pipeline(
         steps =[
-        # YOUR CODE HERE
+        
+        #JWC
+        
+            ('preprocessor', preprocessor),
+            ('random_forest', random_forest)
+        
+        #JWC
+        
         ]
     )
 
